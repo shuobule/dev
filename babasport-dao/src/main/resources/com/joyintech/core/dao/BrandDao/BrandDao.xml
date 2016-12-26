@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joyintech.core.dao.BrandDao.BrandDao">
+	
+	<resultMap type="com.joyintech.core.product.Brand" id="BrandMap">
+		<result column="img_url" property="imgUrl" jdbcType="VARCHAR"/>
+		<result column="is_display" property="isDisplay" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!-- 查询结果集  （条件） 名称  是否可用   limit 开始行 ，每页数 -->
+	<select id="selectBrandListByQuery" parameterType="com.joyintech.core.product.BrandQuery" resultMap="BrandMap">
+		select 
+		id,name,description,sort,img_url,is_display
+		from bbs_brand
+		<where>
+			<if test="name != null">
+				name like concat('%',#{name},'%')
+			</if>
+			<if test="isDisplay != null">
+				and is_display = #{isDisplay}
+			</if>
+		</where>
+		<if test="startRow != null">
+			limit #{startRow},#{pageSize}
+		</if>
+	</select>
+	<!-- 查询总条件数 （条件） 名称  是否可用 -->
+	<select id="selectBrandCountByQuery" parameterType="com.joyintech.core.product.BrandQuery" resultType="java.lang.Integer">
+		select count(1) from bbs_brand
+		<where>
+			<if test="name != null">
+				name like concat('%',#{name},'%')
+			</if>
+			<if test="isDisplay != null">
+				and is_display = #{isDisplay}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 通过ID查询一个品牌 -->
+	<select id="selectBrandById" parameterType="java.lang.Long" resultMap="BrandMap">
+		select 
+			id,name,description,sort,img_url,is_display 
+		from bbs_brand
+			where id = #{id}
+	</select>
+	
+	<insert id="insertBrand" parameterType="com.joyintech.core.product.Brand">
+		insert into bbs_brand
+		(name,description,sort,img_url,is_display)
+		values
+		(#{name,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{sort,jdbcType=BIT},
+		#{imgUrl,jdbcType=VARCHAR},#{isDisplay,jdbcType=BIT})
+	</insert>
+	
+</mapper>
